@@ -513,6 +513,13 @@ mod tests {
     use std::fs;
     use std::io::ErrorKind;
 
+    fn assert_mesh_loads(model_filename: &str) {
+        let mesh = Mesh::load(model_filename, false).expect("Error loading mesh");
+
+        assert!(!mesh.vertices.is_empty());
+        assert!(!mesh.normals.is_empty());
+    }
+
     #[test]
     fn cube_stl() {
         let img_filename = "cube-stl.png".to_string();
@@ -540,51 +547,11 @@ mod tests {
 
     #[test]
     fn cube_obj() {
-        let img_filename = "cube-obj.png".to_string();
-        let config = Config {
-            model_filename: "test_data/cube.obj".to_string(),
-            img_filename: img_filename.clone(),
-            format: image::ImageFormat::Png,
-            ..Default::default()
-        };
-
-        match fs::remove_file(&img_filename) {
-            Ok(_) => (),
-            Err(ref error) if error.kind() == ErrorKind::NotFound => (),
-            Err(_) => {
-                panic!("Couldn't clean files before testing");
-            }
-        }
-
-        render_to_file(&config).expect("Error in render function");
-
-        let size = fs::metadata(img_filename).expect("No file created").len();
-
-        assert_ne!(0, size);
+        assert_mesh_loads("test_data/cube.obj");
     }
 
     #[test]
     fn cube_3mf() {
-        let img_filename = "cube-3mf.png".to_string();
-        let config = Config {
-            model_filename: "test_data/cube.3mf".to_string(),
-            img_filename: img_filename.clone(),
-            format: image::ImageFormat::Png,
-            ..Default::default()
-        };
-
-        match fs::remove_file(&img_filename) {
-            Ok(_) => (),
-            Err(ref error) if error.kind() == ErrorKind::NotFound => (),
-            Err(_) => {
-                panic!("Couldn't clean files before testing");
-            }
-        }
-
-        render_to_file(&config).expect("Error in render function");
-
-        let size = fs::metadata(img_filename).expect("No file created").len();
-
-        assert_ne!(0, size);
+        assert_mesh_loads("test_data/cube.3mf");
     }
 }
